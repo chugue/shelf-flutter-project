@@ -34,7 +34,7 @@ Map<String, Widget Function(BuildContext)> getRouters() {
     Move.homePage: (context) => HomePage(),
     Move.sellerDetailPage: (context) => BestSellerDetailPage(),
     Move.searchPage: (context) => SearchPage(),
-    // Move.brandNewPage: (context) => BrandNewPage(),
+    Move.brandNewPage: (context) => BrandNewPage(),
     Move.myShelfPage: (context) => MyShelf(),
     Move.myPage: (context) => const MyPage(),
     Move.myInfo: (context) => const MyInfo(),

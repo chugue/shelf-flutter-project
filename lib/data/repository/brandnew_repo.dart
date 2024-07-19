@@ -10,8 +10,8 @@ class BrandnewRepo {
 
   BrandnewRepo({required this.baseUrl});
 
-  Future<BrandNewRespDTO> fetchBrandNewData() async {
-    final response = await dio.get("/app/book/new");
+  Future<BrandNewRespDTO> fetchBrandNewData(String registrationMonth) async {
+    final response = await dio.get("/app/book/new", queryParameters: {'month': registrationMonth});
 
     ResponseDTO responseDTO = ResponseDTO.fromJson(response.data);
 
@@ -21,4 +21,5 @@ class BrandnewRepo {
       throw Exception('Failed to load brand new data');
     }
   }
+
 }
