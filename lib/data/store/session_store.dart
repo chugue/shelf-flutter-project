@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/_core/constants/move.dart';
 import 'package:shelf/data/dto/response_dto.dart';
 import 'package:shelf/data/model/user/user.dart';
@@ -21,6 +22,31 @@ class SessionUser {
     this.jwt,
     this.isLogin = false,
   });
+
+  SessionUser copyWith({
+    User? user,
+    String? jwt,
+    bool? isLogin,
+  }) {
+    return SessionUser(
+      user: user ?? this.user,
+      jwt: jwt ?? this.jwt,
+      isLogin: isLogin ?? this.isLogin,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is SessionUser &&
+        other.user == user &&
+        other.jwt == jwt &&
+        other.isLogin == isLogin;
+  }
+
+  @override
+  int get hashCode => user.hashCode ^ jwt.hashCode ^ isLogin.hashCode;
 }
 
 // User Repository Provider
@@ -108,6 +134,14 @@ class SessionStore extends StateNotifier<SessionUser> {
       );
     }
   }
+
+  Future<void> updateAvatar(String avatar) async {
+    if (state.user != null) {
+      final updatedUser = state.user!.copyWith(avatar: avatar);
+      state = state.copyWith(user: updatedUser);
+    }
+  }
+
 
   void logout() async {
     // 로그아웃 처리

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shelf/data/store/session_store.dart';
 import 'package:shelf/ui/common/components/modified_bottom_navigation_bar.dart';
-import 'package:shelf/ui/pages/mypage/_components/logout_button.dart';
 import 'package:shelf/ui/pages/mypage/_components/lower_component.dart';
 import 'package:shelf/ui/pages/mypage/_components/upper_component_subscribed.dart';
 import 'package:shelf/ui/pages/mypage/widgets/company_info.dart';
@@ -18,6 +17,7 @@ class MyPage extends ConsumerWidget {
     final int _selectedIndex = 3;
     final session = ref.read(sessionProvider);
 
+
     return Scaffold(
       body: Container(
         child: ListView(
@@ -25,8 +25,8 @@ class MyPage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: gap_l),
               child: session.user!.status
-                  ? UpperComponentSubscribed(user: session.user!)
-                  : UpperComponent(user: session.user!),
+                  ? UpperComponentSubscribed()
+                  : UpperComponent(),
             ),
             SizedBox(height: gap_m),
             LowerComponent(),

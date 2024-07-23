@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shelf/_core/constants/http.dart';
 import 'package:shelf/data/globals/avatar.dart';
 import 'package:shelf/data/model/user/user.dart';
+import 'package:shelf/data/store/session_store.dart';
 import 'package:shelf/ui/pages/mypage/_components/logout_button.dart';
 import '../../../../_core/constants/constants.dart';
 import '../../../../_core/constants/size.dart';
@@ -13,13 +15,12 @@ import '../../../../data/store/profile_provider.dart';
 import '../pages/payment_management_page.dart';
 
 class UpperComponent extends ConsumerWidget {
-  final User user;
-
-  UpperComponent({required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(profileProvider);
+    final sessionUser = ref.watch(sessionProvider).user;
+    final avatarPath = getAvatarPath(sessionUser!.avatar);
+
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: gap_m, vertical: gap_m),
@@ -32,12 +33,12 @@ class UpperComponent extends ConsumerWidget {
                 padding: const EdgeInsets.only(right: gap_s),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(profile.avatar.isNotEmpty ? profile.avatar : 'https://example.com/default_avatar.png'),
+                  backgroundImage: AssetImage(sessionUser != null ? avatarPath : 'https://example.com/default_avatar.png'),
                 ),
               ),
               SizedBox(height: gap_xxxl, width: gap_s),
               Text(
-                '${user.nickName} 님',
+                '${sessionUser!.nickName} 님',
                 style: h6(),
               ),
               Spacer(),

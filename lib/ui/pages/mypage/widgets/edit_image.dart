@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shelf/_core/constants/http.dart';
+import 'package:shelf/data/store/session_store.dart';
 import '../../../../data/globals/avatar.dart';
 import '../../../../data/store/profile_provider.dart';
 import '../../../../_core/constants/size.dart';
@@ -13,16 +15,19 @@ class EditImage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(profileProvider);
     final profileNotifier = ref.read(profileProvider.notifier);
+    final sessionUser = ref.watch(sessionProvider).user;
+    final sessionUserNotifier = ref.read(sessionProvider.notifier);
+    final avatarPath = getAvatarPath(sessionUser!.avatar);
     ImageProvider<Object>? _profileImage;
 
     // 프로필 이미지 경로에 따라 적절한 ImageProvider를 선택합니다.
-    if (profile.avatar.startsWith('assets/')) {
-      _profileImage = AssetImage(profile.avatar);
-    } else if (profile.avatar.startsWith('http')) {
-      _profileImage = NetworkImage(profile.avatar);
+    if (sessionUser.avatar.startsWith('assets/')) {
+      _profileImage = AssetImage(avatarPath);
+    } else if (sessionUser.avatar.startsWith('http')) {
+      _profileImage = NetworkImage(baseURL + avatarPath);
     } else {
       try {
-        _profileImage = MemoryImage(base64Decode(profile.avatar));
+        _profileImage = AssetImage(avatarPath);
       } catch (e) {
         _profileImage = AssetImage('assets/images/default_avatar.png');
       }
@@ -33,6 +38,7 @@ class EditImage extends ConsumerWidget {
       if (pickedFile != null) {
         final base64Image = await imageFileToBase64(File(pickedFile.path));
         profileNotifier.updateAvatar(base64Image);
+        sessionUserNotifier.updateAvatar(base64Image);
       }
     }
 
@@ -60,7 +66,8 @@ class EditImage extends ConsumerWidget {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: GestureDetector(
                           onTap: () async {
-                            profileNotifier.updateAvatar(avatarlist[index].values.first);
+                            final newAvatar = avatarlist[index].values.first;
+                            sessionUserNotifier.updateAvatar(newAvatar);
                             Navigator.of(context).pop();
                           },
                           child: Image.asset(avatarlist[index].values.first),

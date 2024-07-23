@@ -22,6 +22,29 @@ class User {
     this.nextPaymentDate,
   });
 
+  User copyWith({
+    int? id,
+    String? email,
+    String? nickName,
+    bool? status,
+    String? avatar,
+    DateTime? createdAt,
+    String? subPeriod,
+    String? nextPaymentDate,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      nickName: nickName ?? this.nickName,
+      status: status ?? this.status,
+      avatar: avatar ?? this.avatar,
+      createdAt: createdAt ?? this.createdAt,
+      subPeriod: subPeriod ?? this.subPeriod,
+      nextPaymentDate: nextPaymentDate ?? this.nextPaymentDate,
+    );
+  }
+
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json["id"],
@@ -51,4 +74,6 @@ class User {
   String toString() {
     return 'User{id: $id, email: $email, nickName: $nickName,  status: $status, createdAt: $createdAt}';
   }
+
+
 }

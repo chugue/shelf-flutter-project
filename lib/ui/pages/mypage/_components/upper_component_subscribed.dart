@@ -4,8 +4,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shelf/_core/constants/http.dart';
 import 'package:shelf/data/globals/avatar.dart';
 import 'package:shelf/data/model/user/user.dart';
+import 'package:shelf/data/store/session_store.dart';
 import 'package:shelf/ui/pages/mypage/_components/logout_button.dart';
 import 'package:shelf/ui/pages/mypage/_components/next_purchase.dart';
 import 'package:shelf/ui/pages/mypage/_components/sub_period.dart';
@@ -18,13 +20,12 @@ import '../../../../data/store/profile_provider.dart';
 import '../pages/payment_management_page.dart';
 
 class UpperComponentSubscribed extends ConsumerWidget {
-  final User user;
-
-  UpperComponentSubscribed({required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(profileProvider);
+    final sessionUser = ref.watch(sessionProvider).user;
+    final avatarPath = getAvatarPath(sessionUser!.avatar);
+
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -36,12 +37,12 @@ class UpperComponentSubscribed extends ConsumerWidget {
                 padding: const EdgeInsets.only(right: 10),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: NetworkImage(profile.avatar.isNotEmpty ? profile.avatar : 'https://example.com/default_avatar.png'),
+                  backgroundImage: AssetImage(sessionUser!= null ? avatarPath : 'https://example.com/default_avatar.png'),
                 ),
               ),
               SizedBox(height: 20, width: 5),
               Text(
-                '${user.nickName} 님',
+                '${sessionUser!.nickName} 님',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Spacer(),
@@ -134,7 +135,7 @@ class UpperComponentSubscribed extends ConsumerWidget {
                         width: double.infinity,
                         child: FilledButton(
                           onPressed: () {
-                            _showConfirmationDialog(context);
+                            _showConfirmationDialog(context, sessionUser!.id);
                           },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(TColor.primaryColor1), // 버튼 배경 색상
@@ -159,7 +160,7 @@ class UpperComponentSubscribed extends ConsumerWidget {
     );
   }
 
-  void _showConfirmationDialog(BuildContext context) {
+  void _showConfirmationDialog(BuildContext context, int userId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -177,7 +178,7 @@ class UpperComponentSubscribed extends ConsumerWidget {
               child: Text('확인'),
               onPressed: () {
                 Navigator.of(context).pop();
-                handleUnschedulePayment(context);
+                handleUnschedulePayment(context, userId);
               },
             ),
           ],
@@ -186,14 +187,14 @@ class UpperComponentSubscribed extends ConsumerWidget {
     );
   }
 
-  Future<void> handleUnschedulePayment(BuildContext context) async {
+  Future<void> handleUnschedulePayment(BuildContext context,  int userId) async {
     try {
       // 요청할 URL
       final url = Uri.parse('http://10.0.2.2:8080/app/unschedule');
 
       // 요청 본문 데이터
       final body = jsonEncode({
-        'user_id': user.id,
+        'user_id': userId,
       });
 
       // POST 요청 보내기
