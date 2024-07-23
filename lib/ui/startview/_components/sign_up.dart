@@ -70,7 +70,25 @@ class _SignUpState extends ConsumerState<SignUp> {
                 Expanded(
                   flex: 1,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('확인'),
+                            content: Text('사용하실 수 있는 이메일입니다'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('확인'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     style: TextButton.styleFrom(
                       backgroundColor: kAccentColor3,
                       foregroundColor: Colors.white,
@@ -111,7 +129,25 @@ class _SignUpState extends ConsumerState<SignUp> {
                 Expanded(
                   flex: 1,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('확인'),
+                            content: Text('사용하실 수 있는 닉네임입니다.'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('확인'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                     style: TextButton.styleFrom(
                       backgroundColor: kAccentColor3,
                       foregroundColor: Colors.white,
