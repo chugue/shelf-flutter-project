@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shelf/_core/constants/http.dart';
 import 'package:shelf/ui/pages/home/pages/book_detail_page/_components/detail_page_tabs.dart';
 import 'package:shelf/ui/pages/home/pages/book_detail_page/data/book_detail_viewmodel.dart';
@@ -23,6 +24,8 @@ class BookDetailPage extends ConsumerWidget {
     if (bookDetailState == null) {
       return Center(child: CircularProgressIndicator());
     }
+    final formattedDate = DateFormat('yyyy년 MM월 dd일').format(bookDetailState.bookDetailDTO.registrationDate);
+
 
     return Scaffold(
       body: Container(
@@ -117,7 +120,7 @@ class BookDetailPage extends ConsumerWidget {
                             ),
                             SizedBox(height: 10),
                             Text(
-                              '${bookDetailState.bookDetailDTO.publisher} · ${bookDetailState.bookDetailDTO.category} · ${bookDetailState.bookDetailDTO.registrationDate}',
+                              '${bookDetailState.bookDetailDTO.publisher} · ${bookDetailState.bookDetailDTO.category} · $formattedDate',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[700],
@@ -126,7 +129,7 @@ class BookDetailPage extends ConsumerWidget {
                             SizedBox(height: 20),
                             Container(
                               padding: EdgeInsets.only(
-                                  top: 25, left: 25, right: 25, bottom: 25),
+                                  top: 25, left: 13, right: 25, bottom: 25),
                               decoration: BoxDecoration(
                                 color: Colors.white54.withOpacity(0.8),
                                 borderRadius: BorderRadius.circular(10),
@@ -151,18 +154,18 @@ class BookDetailPage extends ConsumerWidget {
                                           .bookDetailDTO.completedViews,
                                     ),
                                   ),
-                                  SizedBox(width: 20),
+                                  SizedBox(width: 12),
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${((bookDetailState.bookDetailDTO.completedViews ?? 0) / (bookDetailState.bookDetailDTO.totalViews ?? 1) * 100).toStringAsFixed(1)}%의 구독자가 완독했어요!',
-                                        style: TextStyle(fontSize: 16),
+                                        style: TextStyle(fontSize: 14),
                                       ),
                                       Text(
                                         '총 완독자 수 ${bookDetailState.bookDetailDTO.completedViews ?? 0}명',
-                                        style: TextStyle(fontSize: 16),
+                                        style: TextStyle(fontSize: 14),
                                       ),
                                     ],
                                   ),

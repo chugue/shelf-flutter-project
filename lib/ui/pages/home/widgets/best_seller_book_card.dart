@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:shelf/_core/constants/http.dart';
-import 'package:shelf/ui/pages/home/data/home_page_model.dart';
-import 'package:shelf/ui/pages/home/pages/book_detail_page/book_detail_page.dart';
+import '../data/home_page_data.dart';
+import '../pages/book_detail_page/book_detail_page.dart';
 
 class BestsellerBookCard extends StatelessWidget {
-  final BestSellerDTO book;
+  final BestsellerBook book;
   final bool isFirst;
 
   BestsellerBookCard({required this.book, this.isFirst = false});
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = '$baseURL${book.bookImagePath}';
-
     return Container(
       padding: EdgeInsets.only(left: 35),
       width: isFirst ? 240 : 200,
@@ -28,7 +25,7 @@ class BestsellerBookCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BookDetailPage(bookId: book.id),
+                      builder: (context) => BookDetailPage(bookId: null,),
                     ),
                   );
                 },
@@ -37,7 +34,7 @@ class BestsellerBookCard extends StatelessWidget {
                   height: isFirst ? 334 : 130,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(imageUrl),
+                      image: AssetImage(book.imagePath),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -48,7 +45,7 @@ class BestsellerBookCard extends StatelessWidget {
                 bottom: isFirst ? -35 : -10,
                 left: isFirst ? -40 : -15,
                 child: Text(
-                  book.rankNum,
+                  book.rank,
                   style: TextStyle(
                     fontSize: isFirst ? 120 : 50,
                     fontWeight: FontWeight.bold,
@@ -67,7 +64,7 @@ class BestsellerBookCard extends StatelessWidget {
           ),
           SizedBox(height: 10),
           Text(
-            book.bookTitle,
+            book.title,
             style: TextStyle(
               fontSize: isFirst ? 20 : 14,
               fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../_core/constants/constants.dart';
 
 class EditProfileForm extends StatefulWidget {
@@ -12,8 +13,14 @@ class _EditProfileFormState extends State<EditProfileForm> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _heightController = TextEditingController();
-  final String _userEmail = "ssar@nate.com";
+  final _addressController = TextEditingController();
+  final String _userEmail = "psk@naver.com";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
 
   @override
   void dispose() {
@@ -21,8 +28,27 @@ class _EditProfileFormState extends State<EditProfileForm> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
-    _heightController.dispose();
+    _addressController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _nameController.text = prefs.getString('name') ?? '박선규';
+      _passwordController.text = prefs.getString('password') ?? '1234';
+      _confirmPasswordController.text = prefs.getString('password') ?? '1234';
+      _phoneController.text = prefs.getString('phone') ?? '010-2897-2345';
+      _addressController.text = prefs.getString('address') ?? '부산광역시 금정구';
+    });
+  }
+
+  Future<void> _saveProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('name', _nameController.text);
+    await prefs.setString('password', _passwordController.text);
+    await prefs.setString('phone', _phoneController.text);
+    await prefs.setString('address', _addressController.text);
   }
 
   @override
@@ -95,7 +121,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: TextFormField(
-              controller: _heightController,
+              controller: _addressController,
               decoration: InputDecoration(
                 label: Text('주소'),
                 hintText: '주소를 입력하세요',
@@ -105,11 +131,14 @@ class _EditProfileFormState extends State<EditProfileForm> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
             child: SizedBox(
-              width: double.infinity, // Set the button width to full width of the container
+              width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Handle the form submission
+                    _saveProfile();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('저장되었습니다.')),
+                    );
                   }
                 },
                 child: Text('저장'),

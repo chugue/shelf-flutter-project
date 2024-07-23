@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shelf/_core/constants/constants.dart';
-import 'package:shelf/ui/pages/home/data/home_page_model.dart';
-
+import 'package:shelf/_core/constants/size.dart';
+import '../data/home_page_data.dart';
 import '../pages/best_seller_detail_page.dart';
 import '../widgets/best_seller_book_card.dart';
 
 class BestSellerSection extends StatelessWidget {
-  final List<BestSellerDTO> books;
-
-  const BestSellerSection({
-    required this.books,
-  });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(gap_s),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -57,26 +51,26 @@ class BestSellerSection extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               children: [
                 BestsellerBookCard(
-                  book: books[0],
+                  book: bestsellerBooks[0],
                   isFirst: true,
                 ),
                 Row(
                   children: List.generate(
-                    (books.length - 1) ~/ 2,
-                    (index) => Column(
+                    (bestsellerBooks.length - 1) ~/ 2,
+                        (index) => Column(
                       children: [
                         Container(
                           width: 120,
                           child: BestsellerBookCard(
-                            book: books[2 * index + 1],
+                            book: bestsellerBooks[2 * index + 1],
                           ),
                         ),
                         SizedBox(height: 10),
-                        if (2 * index + 2 < books.length)
+                        if (2 * index + 2 < bestsellerBooks.length)
                           Container(
                             width: 120,
                             child: BestsellerBookCard(
-                              book: books[2 * index + 2],
+                              book: bestsellerBooks[2 * index + 2],
                             ),
                           ),
                       ],

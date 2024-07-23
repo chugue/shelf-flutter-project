@@ -1,90 +1,97 @@
 import 'dart:io';
-
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shelf/data/globals/avatar.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../data/globals/avatar.dart';
+import '../../../../data/store/profile_provider.dart';
 import '../../../../_core/constants/size.dart';
 
-class EditImage extends StatefulWidget {
+class EditImage extends ConsumerWidget {
   @override
-  _EditImageState createState() => _EditImageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(profileProvider);
+    final profileNotifier = ref.read(profileProvider.notifier);
+    ImageProvider<Object>? _profileImage;
 
-class _EditImageState extends State<EditImage> {
-  ImageProvider<Object>? _profileImage;
-  List<Map<String, String>> avatars = avatarlist;
-
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = FileImage(File(pickedFile.path));
-      });
+    // 프로필 이미지 경로에 따라 적절한 ImageProvider를 선택합니다.
+    if (profile.avatar.startsWith('assets/')) {
+      _profileImage = AssetImage(profile.avatar);
+    } else if (profile.avatar.startsWith('http')) {
+      _profileImage = NetworkImage(profile.avatar);
+    } else {
+      try {
+        _profileImage = MemoryImage(base64Decode(profile.avatar));
+      } catch (e) {
+        _profileImage = AssetImage('assets/images/default_avatar.png');
+      }
     }
-  }
 
-  void _showAvatarChooser() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(gap_sm),
-          child: Container(
-            height: 350,
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('프로필 사진을 선택하세요'),
-                  onTap: () => Navigator.of(context).pop(),
-                ),
-                Container(
-                  height: 100,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: avatars.length,
-                    itemBuilder: (context, index) => Container(
-                      width: 100,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _profileImage =
-                                AssetImage(avatars[index].values.first);
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: Image.asset(avatars[index].values.first),
+    Future<void> _pickImage(ImageSource source) async {
+      final pickedFile = await ImagePicker().pickImage(source: source);
+      if (pickedFile != null) {
+        final base64Image = await imageFileToBase64(File(pickedFile.path));
+        profileNotifier.updateAvatar(base64Image);
+      }
+    }
+
+    void _showAvatarChooser() {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(gap_sm),
+            child: Container(
+              height: 350,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('프로필 사진을 선택하세요'),
+                    onTap: () => Navigator.of(context).pop(),
+                  ),
+                  Container(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: avatarlist.length,
+                      itemBuilder: (context, index) => Container(
+                        width: 100,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: GestureDetector(
+                          onTap: () async {
+                            profileNotifier.updateAvatar(avatarlist[index].values.first);
+                            Navigator.of(context).pop();
+                          },
+                          child: Image.asset(avatarlist[index].values.first),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('앨범에서 추가하기'),
-                  onTap: () {
-                    _pickImage(ImageSource.gallery);
-                    Navigator.of(context).pop();
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('카메라 열기'),
-                  onTap: () {
-                    _pickImage(ImageSource.camera);
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+                  ListTile(
+                    leading: Icon(Icons.photo_library),
+                    title: Text('앨범에서 추가하기'),
+                    onTap: () {
+                      _pickImage(ImageSource.gallery);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.camera_alt),
+                    title: Text('카메라 열기'),
+                    onTap: () {
+                      _pickImage(ImageSource.camera);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
+          );
+        },
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: Stack(
@@ -92,8 +99,7 @@ class _EditImageState extends State<EditImage> {
           CircleAvatar(
             radius: 75,
             backgroundColor: Colors.grey[300],
-            backgroundImage:
-                _profileImage ?? AssetImage("assets/images/avatar1.png"),
+            backgroundImage: _profileImage,
           ),
           Positioned(
             bottom: 10,
@@ -111,5 +117,11 @@ class _EditImageState extends State<EditImage> {
         ],
       ),
     );
+  }
+
+  // 이미지 파일을 Base64 문자열로 인코딩
+  Future<String> imageFileToBase64(File imageFile) async {
+    Uint8List imageBytes = await imageFile.readAsBytes();
+    return base64Encode(imageBytes);
   }
 }

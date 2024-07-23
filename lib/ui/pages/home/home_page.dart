@@ -25,8 +25,7 @@ class HomePage extends ConsumerWidget {
                       historyBooks: homePageModel.homeData.bookHistory),
                   BookOfTheDaySection(
                       book: homePageModel.homeData.dayBestSeller),
-                  BestSellerSection(
-                      books: homePageModel.homeData.weekBestSellers),
+                  BestSellerSection(),
                 ],
               ),
             ),

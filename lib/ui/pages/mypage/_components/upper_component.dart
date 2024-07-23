@@ -1,87 +1,26 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shelf/data/globals/avatar.dart';
 import 'package:shelf/data/model/user/user.dart';
 import 'package:shelf/ui/pages/mypage/_components/logout_button.dart';
-
 import '../../../../_core/constants/constants.dart';
 import '../../../../_core/constants/size.dart';
 import '../../../../_core/constants/style.dart';
+import '../../../../data/store/profile_provider.dart';
 import '../pages/payment_management_page.dart';
-import '../pages/payment_web_view.dart';
 
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // 환경변수 관련
-
-class UpperComponent extends StatefulWidget {
-  final User? user;
+class UpperComponent extends ConsumerWidget {
+  final User user;
 
   UpperComponent({required this.user});
 
   @override
-  _UpperComponentState createState() => _UpperComponentState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profile = ref.watch(profileProvider);
 
-class _UpperComponentState extends State<UpperComponent> {
-  final String impKey = dotenv.env['IMP_KEY'] ?? 'IMP KEY를 찾을 수 없습니다.';
-  final String impSecret = dotenv.env['IMP_SECRET'] ?? 'IMP SECRET을 찾을 수 없습니다.';
-
-  Future<String> getAuthToken() async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://api.iamport.kr/users/getToken'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'imp_key': impKey,
-          'imp_secret': impSecret,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['response']['access_token'];
-      } else {
-        print('Failed to get auth token: ${response.body}');
-        throw Exception('Token 발급 실패');
-      }
-    } catch (e) {
-      print('Exception in getAuthToken: $e');
-      throw Exception('Token 발급 실패');
-    }
-  }
-
-  Future<void> handleInitialPayment() async {
-    try {
-      String token = await getAuthToken();
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentWebView(paymentData: {
-            'merchant_uid': 'order_${DateTime.now().millisecondsSinceEpoch}', // 고객사 주문번호 (ex.order_1720595101178)
-            'amount': 100, // 상품 금액 // TODO: 실제 금액으로 바꾸기
-            'name': '[Shelf] 정기 결제', // 정기 결제 이름
-            'customer_uid': 'customer_${DateTime.now().millisecondsSinceEpoch}', // 구매자의 결제 수단 식별 고유번호 (ex.customer_1720595101182)
-            'pg': 'html5_inicis',
-            'buyer_email': widget.user!.email, // 구매자 이메일
-            'token': token,
-          }),
-        ),
-      ).then((result) {
-        if (result == 'success') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('결제가 완료되었습니다.')),
-          );
-        }
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('결제 창 호출에 실패했습니다.')));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: gap_m, vertical: gap_m),
       color: Colors.white,
@@ -93,12 +32,12 @@ class _UpperComponentState extends State<UpperComponent> {
                 padding: const EdgeInsets.only(right: gap_s),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: AssetImage(getAvatarPath(widget.user!.avatar)),
+                  backgroundImage: NetworkImage(profile.avatar.isNotEmpty ? profile.avatar : 'https://example.com/default_avatar.png'),
                 ),
               ),
               SizedBox(height: gap_xxxl, width: gap_s),
               Text(
-                '${widget.user!.nickName} 님',
+                '${user.nickName} 님',
                 style: h6(),
               ),
               Spacer(),
@@ -169,17 +108,13 @@ class _UpperComponentState extends State<UpperComponent> {
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                          onPressed: handleInitialPayment,
+                          onPressed: () {}, // 이 부분은 필요에 따라 구현
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                TColor.primaryColor1), // 버튼 배경 색상
-                            foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
+                            backgroundColor: MaterialStateProperty.all<Color>(TColor.primaryColor1), // 버튼 배경 색상
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(5.0), // 원하는 반경 값 설정
+                                borderRadius: BorderRadius.circular(5.0), // 원하는 반경 값 설정
                               ),
                             ),
                           ),

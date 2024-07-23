@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shelf/_core/constants/size.dart';
 import 'package:shelf/data/store/session_store.dart';
 import 'package:shelf/ui/common/components/modified_bottom_navigation_bar.dart';
 import 'package:shelf/ui/pages/mypage/_components/logout_button.dart';
@@ -8,7 +7,7 @@ import 'package:shelf/ui/pages/mypage/_components/lower_component.dart';
 import 'package:shelf/ui/pages/mypage/_components/upper_component_subscribed.dart';
 import 'package:shelf/ui/pages/mypage/widgets/company_info.dart';
 import 'package:shelf/ui/pages/mypage/widgets/contact_icons.dart';
-
+import '../../../_core/constants/size.dart';
 import '_components/upper_component.dart';
 
 class MyPage extends ConsumerWidget {
