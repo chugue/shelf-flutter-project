@@ -28,12 +28,8 @@ class HomePageViewmodel extends StateNotifier<HomePageModel?> {
   HomePageViewmodel(this.ref, super.state);
 
   void initialize() {
-    logger.d("👉👉👉👉 initialize");
-
     ref.listen<SessionUser>(sessionProvider, (previous, next) {
-      logger.d("👉👉👉👉 ref.listen called");
       if (previous?.jwt != next.jwt && next.jwt != null) {
-        logger.d("👉👉👉👉 JWT changed, loading home page data");
         loadHomePageData(next.jwt!);
       }
     });
@@ -42,16 +38,13 @@ class HomePageViewmodel extends StateNotifier<HomePageModel?> {
     logger.d(sessionUser.jwt);
 
     if (sessionUser.jwt != null) {
-      logger.d("👉👉👉👉 Initial JWT present, loading home page data");
       loadHomePageData(sessionUser.jwt!);
     }
   }
 
   Future<void> loadHomePageData(String jwt) async {
     try {
-      logger.d("👉👉👉👉 Loading home page data with JWT: $jwt");
       HomeData homeData = await HomeRepo().fetchHomeData(jwt);
-      logger.d("👉👉👉👉 Home data loaded: ${homeData.toString()}");
 
       state = HomePageModel(homeData: homeData);
     } catch (e) {

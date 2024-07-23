@@ -5,12 +5,14 @@ import 'package:shelf/main.dart';
 import 'package:shelf/ui/pages/home/pages/book_detail_page/data/book_detail_model.dart';
 import 'package:shelf/ui/pages/home/pages/book_detail_page/data/book_detail_repo.dart';
 
+// 창고 관리자
 final bookDetailProvider =
     StateNotifierProvider.family<BookDetailViewmodel, BookDetailModel?, int>(
         (ref, id) {
   return BookDetailViewmodel(ref, id)..loadBookDetail();
 });
 
+// 창고
 class BookDetailModel {
   final BookDetailDTO bookDetailDTO;
 
@@ -29,6 +31,7 @@ class BookDetailModel {
 
 BookDetailModel? copyWith({required BookDetailDTO bookDetailDTO}) {}
 
+// 창고 데이터
 class BookDetailViewmodel extends StateNotifier<BookDetailModel?> {
   final mContext = navigatorKey.currentContext;
   final Ref ref;
