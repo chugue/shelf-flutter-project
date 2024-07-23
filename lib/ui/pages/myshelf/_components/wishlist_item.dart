@@ -33,7 +33,7 @@ class WishlistItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WishDetailPage(bookId: book.id),
+              builder: (context) => WishDetailPage(bookId: book.bookId),
             ),
           );
         },

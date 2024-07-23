@@ -16,12 +16,13 @@ final dio = Dio(
 // 휴대폰 로컬에 파일로 저장
 const secureStorage = FlutterSecureStorage();
 
-String? globalAccessToken = null;
+String? globalAccessToken;
 var logger = Logger();
 
 // 인터셉터 생성
 var interceptor = InterceptorsWrapper(
   onRequest: (options, handler) async {
+
     // /app으로 시작하는 경로에 대해서만 토큰 처리
     if (options.path.startsWith('/app')) {
       if (globalAccessToken != null) {

@@ -24,9 +24,24 @@ class WishlistTab extends ConsumerWidget {
       child: Wrap(
         spacing: 8.0,
         runSpacing: gap_xs,
-        children: displayList.map((book) {
-          return WishlistItem(book: book);
-        }).toList(),
+        children: displayList.isEmpty
+            ? [
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: Text(
+                      "위시리스트가 비어있습니다.",
+                      style: TextStyle(
+                        color: Colors.black26,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                )
+              ]
+            : displayList.map((book) {
+                return WishlistItem(book: book);
+              }).toList(),
       ),
     );
   }

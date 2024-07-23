@@ -48,6 +48,7 @@ class SessionStore extends StateNotifier<SessionUser> {
 
       state = SessionUser(
           user: responseDTO.data, isLogin: true, jwt: responseDTO.token);
+      globalAccessToken = responseDTO.token;
 
       Navigator.pushNamed(mContext!, Move.homePage);
     } else {
@@ -66,6 +67,7 @@ class SessionStore extends StateNotifier<SessionUser> {
       state = SessionUser(
           user: responseDTO.data, isLogin: true, jwt: responseDTO.token);
 
+      globalAccessToken = responseDTO.token;
       Navigator.pushNamed(mContext!, Move.homePage);
     } else {
       ScaffoldMessenger.of(mContext!)
