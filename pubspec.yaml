@@ -62,7 +62,7 @@ dependencies:
   webview_flutter_android: ^3.16.3
   webview_flutter_wkwebview: ^3.13.1
   flutter_dotenv: ^5.1.0 # 환경변수를 .env 파일로 분리해서 관리하기 위해 필요
-
+  sentry_flutter: ^8.4.0 # sentry : 로그 남기기 - https://sentry.io/welcome/
 
 
 
@@ -111,14 +111,14 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-#  fonts:
-#    - family: Poppins
-#      fonts:
-#        - asset: assets/fonts/Poppins-Regular.ttf
-#        - asset: assets/fonts/Poppins-Medium.ttf
-#          weight: 500
-#        - asset: assets/fonts/Poppins-Bold.ttf
-#          weight: 700
+  #  fonts:
+  #    - family: Poppins
+  #      fonts:
+  #        - asset: assets/fonts/Poppins-Regular.ttf
+  #        - asset: assets/fonts/Poppins-Medium.ttf
+  #          weight: 500
+  #        - asset: assets/fonts/Poppins-Bold.ttf
+  #          weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -1,18 +1,29 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cosmos_epub/Model/book_progress_model.dart';
 import 'package:cosmos_epub/cosmos_epub.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // 환경변수 관련
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shelf/_core/constants/move.dart';
 import 'package:webview_flutter/webview_flutter.dart'; // WebView 패키지 추가
 import 'package:webview_flutter_android/webview_flutter_android.dart'; // Android용 WebView 패키지 추가
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // 환경변수 관련
 
 import 'data/store/darkmode.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://5a29f7363cce22760b0250ee9e02300e@o4507654994853888.ingest.us.sentry.io/4507655007830016';
+      options.tracesSampleRate = 0.01;
+      options.profilesSampleRate = 0.01;
+    },
+    appRunner: () => runApp(MyApp()),
+  );
+
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
@@ -22,7 +33,6 @@ void main() async {
   } catch (e) {
     print(".env 파일 로드 실패: $e");
   }
-
 
   // WebView 플랫폼 초기화
   if (WebViewPlatform.instance == null) {
